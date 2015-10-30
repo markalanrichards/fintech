@@ -16,7 +16,7 @@ object Application extends Controller {
 
   def db = Action {
     val dataRepo = new MongoDataRepository(new MongoConnection("mongodb://heroku_tvczrsc9:128m3n0bkg1qtuta2uv4p6ga7h@ds045464.mongolab.com:45464/heroku_tvczrsc9", "heroku_tvczrsc9"), "trades")
-    val out = dataRepo.findAll()
+    val out = dataRepo.findAll[List[Map[String, String]]]().map { trade => trade.map(t => s"${t._1} => ${t._2}") + "-"}.mkString("\n")
     Ok(out)
   }
 }
