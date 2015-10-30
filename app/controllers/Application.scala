@@ -19,7 +19,7 @@ object Application extends Controller {
     val trades = dataRepo.findAll[List[Map[String, String]]]().map(JSONObject).map(_.toString())
     val out = trades.mkString(start, ",", end)
 
-    Ok(out)
+    Ok(out).as("application/json")
   }
 
 }
