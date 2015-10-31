@@ -1,8 +1,13 @@
 package controllers
 
+import java.math
+import java.math.MathContext
+
 import data.MongoRepo._
 import helpers.Implicits
 import play.api.routing.JavaScriptReverseRouter
+
+import scala.math.BigDecimal.RoundingMode
 
 // import data.TestRepo._
 import models.{CaseHelper, CounterpartyData, TradeData}
@@ -29,11 +34,17 @@ object Application extends Controller {
   }
 
   def tradesJson = Action {
+    val capitalRatingMap: Map[String, String] = capitalRateRepo.findAll().map(v => {
+      (v.get("rating").get, v.get("capitalPercentage").get)
+    }).toMap
     val counterPartiesMap: Map[String,String] = counterpartiesRepo.findAll().map(v => {
       ( v.get("counterparty").get,v.get("rating").get)
     }).toMap
     val trades = tradesRepo.findAll().map(x => {
-      Map("rating" -> counterPartiesMap.get(x.get("counterparty").get)) ++ x
+      val ratingValue = counterPartiesMap(x.get("counterparty").get).toString()
+      val mathContext = new MathContext(2,math.RoundingMode.HALF_EVEN)
+      val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext)
+      Map("rating" -> ratingValue,"capitalrequirement" -> capitalRequirement) ++ x
     })
     Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
   }
