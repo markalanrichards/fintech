@@ -4,6 +4,7 @@ import java.math
 import java.math.MathContext
 
 import data.MongoRepo._
+import play.api.libs.json.Json
 
 // import data.TestRepo._
 
@@ -20,6 +21,9 @@ object Application extends Controller {
   def d3 = Action {
     Ok(views.html.d3())
   }
+  def d32 = Action {
+    Ok(views.html.d32())
+  }
 
   def index = Action {
     Ok(views.html.populate(counterpartyForm, tradeForm))
@@ -30,7 +34,7 @@ object Application extends Controller {
     Ok(views.html.trades())
   }
 
-  def tradesJson = Action {
+  def tradesJsonValue =  {
     val capitalRatingMap: Map[String, String] = capitalRateRepo.findAll().map(v => {
       (v.get("rating").get, v.get("capitalPercentage").get)
     }).toMap
@@ -43,7 +47,11 @@ object Application extends Controller {
       val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext).abs
       Map("rating" -> ratingValue, "capitalrequirement" -> capitalRequirement) ++ x
     })
-    Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
+    trades
+
+  }
+  def tradesJson = Action{
+    Ok(com.mongodb.util.JSON.serialize(tradesJsonValue)).as("application/json")
   }
 
   def counterparties = Action {
@@ -100,15 +108,25 @@ object Application extends Controller {
 
   def ratingsPost = Action { implicit request =>
     counterpartiesRepo.remove(Map())
-     val newRatings : List[CounterpartyData] = request.body.asFormUrlEncoded.get.toList.map(entry => {
-      CounterpartyData(entry._1,entry._2(0))
+    val newRatings: List[CounterpartyData] = request.body.asFormUrlEncoded.get.toList.map(entry => {
+      CounterpartyData(entry._1, entry._2(0))
     })
 
-    newRatings.foreach {x =>
+    newRatings.foreach { x =>
       counterpartiesRepo.insert(CaseHelper.ccToMap(x))
     }
-//    println(newRatings)
+    //    println(newRatings)
     Redirect(routes.Application.trades())
+  }
+
+  def ratingPieChart = Action  {
+    val ratingPieChart = tradesJsonValue.map(trade =>
+      (trade("rating").toString,trade("capitalrequirement").toString.toDouble))
+      .groupBy(tuple => tuple._1)
+      .map(tradeToTuple => (tradeToTuple._1,tradeToTuple._2.map(_._2).sum))
+      .map(entry => Map("key"-> entry._1,"y" -> entry._2.toString))
+    println(ratingPieChart)
+    Ok(Json.toJson(ratingPieChart).toString).as("application/json")
   }
 
 }
