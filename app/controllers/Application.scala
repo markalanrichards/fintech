@@ -50,7 +50,7 @@ object Application extends Controller {
       }).sum
       x -> newValue.r2str
     }
-    Ok(com.mongodb.util.JSON.serialize(libors))
+    Ok(com.mongodb.util.JSON.serialize("names" -> libors)).as("application/json")
   }
 
   def scenarioAnalysis(newBps: String) = Action {
