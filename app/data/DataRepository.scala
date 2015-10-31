@@ -94,6 +94,7 @@ class MongoDataRepository(val conn: MongoConnection, collectionName: String) ext
       el.toSeq.map(v => v._1 -> v._2.asInstanceOf[T]).toMap
     }.toList
   }
+
   def search[T <: Any](filter: Map[String, T]): List[Map[String, T]] = {
     val res = col.find(MongoDBObject(filter.toSeq: _*))
     val r2 = res.map { el =>

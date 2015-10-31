@@ -24,7 +24,7 @@ object Scenarios extends Controller {
   }
 
   private def liborTradeAnalysis(t: TradeData, libor: Double) = {
-    t.notional * (t.fixRate.% - t.floatingRate.%.toDouble + libor)
+    t.notional * (t.fixRate.% - t.floatingRate.%.toDouble - libor)
   }
 
   val libors = List(2.5, 3.0, 3.5, 4.0, 4.5)
