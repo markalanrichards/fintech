@@ -1,6 +1,6 @@
 package data
 
-import models.{CaseHelper, TradeData}
+import models.{CapitalRateData, CounterpartyData, CaseHelper, TradeData}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
@@ -16,21 +16,36 @@ object MongoRepo {
   val connection = new MongoConnection("mongodb://heroku_tvczrsc9:128m3n0bkg1qtuta2uv4p6ga7h@ds045464.mongolab.com:45464/heroku_tvczrsc9", "heroku_tvczrsc9")
   val tradesRepo = new MongoDataRepository(connection, "trades")
   val counterpartiesRepo = new MongoDataRepository(connection, "counterparties")
+  val ratingsRepo = new MongoDataRepository(connection,"ratings")
+  val parties = List("Liverpool Bank", "Bristol Bank","Southampton Bank", "Edinburgh Bank", "Norfolk Bank", "Birmingham Bank","Cardiff Bank")
+
+  var ratings = Map(
+    "AAA"->"0.07",
+    "AA" -> "0.08",
+    "A+" -> "0.10",
+    "A" -> "0.12",
+    "A-" -> "0.20",
+    "BBB+" -> "0.35",
+    "BBB" -> "0.60",
+    "BBB-" -> "1.00",
+    "BB+" -> "2.50",
+    "BB" -> "4.25",
+    "BB-"->"6.5"
+  )
 
   def main(a: Array[String]) {
+
+
     val dataRepo = tradesRepo
 
     //println(counterpartiesRepo.size)
 
+    def randomRating= {
+      ratings.toList(Random.nextInt(ratings.size))._1
+    }
 
     def randomCC = {
-      Math.abs(new Random().nextInt()) % 5 match {
-        case 0 => "City Bank UK"
-        case 1 => "Barclays"
-        case 2 => "Bank Of America"
-        case 3 => "UBS"
-        case 4 => "Lloyds Bank"
-      }
+      parties(Random.nextInt(parties.length))
     }
 
     def randomCurr = {
@@ -67,13 +82,23 @@ object MongoRepo {
 
 
     dataRepo.remove(Map())
+    counterpartiesRepo.remove(Map())
+    ratingsRepo.remove(Map())
+    parties.foreach(party => {
+      val counterParty = CounterpartyData(party,randomRating)
+      counterpartiesRepo.insert(CaseHelper.ccToMap(counterParty))
+    })
+    ratings.foreach(entry => {
+      ratingsRepo.insert(CaseHelper.ccToMap(CapitalRateData(entry._1,entry._2)))
+    })
     (0 to 50).foreach { i =>
-      val t = TradeData(randomCurr, randomNotional, (1 + randomNum(10)).toString + "y", "2015-11-10", randomCC, (4 + randomPercentage) + "%", randomPercentage + "%")
-      dataRepo.insert(CaseHelper.ccToMap(t))
-      //    }
+      val randomCounterParty: String = randomCC
 
+      val t = TradeData(randomCurr, randomNotional, (1 + randomNum(10)).toString, "2015-11-10", randomCounterParty, (4 + randomPercentage).toString, randomPercentage.toString)
+      dataRepo.insert(CaseHelper.ccToMap(t))
       println(dataRepo.size)
     }
+
   }
 
 }
