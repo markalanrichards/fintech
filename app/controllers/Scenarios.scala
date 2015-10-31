@@ -37,11 +37,11 @@ object Scenarios extends Controller {
     val librs = libors.map { liblib =>
         val values = (0 to 10).map { x =>
           val newValue = trades.filter(_.tenor.y == x).map(t => {
-            liborTradeAnalysis(t, libor)
+            liborTradeAnalysis(t, liblib)
           }).sum
          (x -> newValue.r2str)
         }
-      Map("key" -> s"Libor$liblib") -> Map("values" -> values)
+      Map("key" -> s"Libor$liblib", "values" -> values)
       }
     Ok(com.mongodb.util.JSON.serialize(Map("names" -> librs))).as("application/json")
   }
