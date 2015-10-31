@@ -43,7 +43,7 @@ object Application extends Controller {
     val trades = tradesRepo.findAll().map(x => {
       val ratingValue = counterPartiesMap(x.get("counterparty").get).toString()
       val mathContext = new MathContext(2,math.RoundingMode.HALF_EVEN)
-      val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext)
+      val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext).abs
       Map("rating" -> ratingValue,"capitalrequirement" -> capitalRequirement) ++ x
     })
     Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
