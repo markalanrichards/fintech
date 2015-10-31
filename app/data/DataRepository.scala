@@ -2,6 +2,9 @@ package data
 
 import com.mongodb.casbah.Imports._
 
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
+
 // interface that provide CRUD operations
 // move to library
 trait DataRepository {
@@ -36,6 +39,24 @@ class MongoConnection(mongoUri: String, dbName: String) {
 
 }
 
+class InMemoryDataRepository(cache: ArrayBuffer[Map[String, AnyRef]]) extends DataRepository {
+  override def insert[T](obj: Map[String, T]): AnyRef = ???
+
+  override def update[T](query: Map[String, T], obj: Map[String, T]): AnyRef = ???
+
+  override def findAll[T](): List[Map[String, T]] = ???
+
+  override def updateOrInsert[T](query: Map[String, T], obj: Map[String, T], upsertOption: Boolean, multi: Boolean): AnyRef = ???
+
+  override def remove[T](filter: Map[String, T]): Int = ???
+
+  override def updateAll[T](query: Map[String, T], obj: Map[String, T]): AnyRef = ???
+
+  override def search[T](filter: Map[String, T]): List[Map[String, T]] = ???
+
+  override def first[T](filter: Map[String, T]): Option[Map[String, T]] = ???
+}
+
 
 // api to work with specific collection
 class MongoDataRepository(val conn: MongoConnection, collectionName: String) extends DataRepository {
@@ -65,7 +86,6 @@ class MongoDataRepository(val conn: MongoConnection, collectionName: String) ext
     )
     res.getUpsertedId
   }
-
 
   def size = col.size
 

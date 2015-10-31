@@ -1,0 +1,40 @@
+@(counterpartyForm: Form[CounterpartyData], tradeForm: Form[TradeData])(implicit messages: Messages)
+
+
+@main("Populate some data") {
+@helper.form(action = routes.Application.counterpartyPost(), 'class -> "form") {
+
+@if(counterpartyForm.hasGlobalErrors) {
+<p class="error">
+    <span class="label label-danger">@counterpartyForm.globalError</span>
+</p>
+}
+
+<fieldset>
+
+    @helper.inputText(counterpartyForm("counterparty"),
+    '_label -> null,
+    '_help -> "Counterparty name",
+    'class -> "form-control")
+    @helper.inputText(counterpartyForm("rating"),
+    '_label -> null,
+    '_help -> "Counterparty rating",
+    'class -> "form-control")
+    <div class="form-actions"><input type="submit" class="btn btn-primary"></div>
+
+</fieldset>
+}
+
+
+@helper.form(action = routes.Application.tradePost()) {
+@helper.inputText(tradeForm("currency"))
+@helper.inputText(tradeForm("notional"))
+@helper.inputText(tradeForm("tenor"))
+@helper.inputText(tradeForm("maturityDate"))
+@helper.inputText(tradeForm("counterparty"))
+@helper.inputText(tradeForm("fixRate"))
+@helper.inputText(tradeForm("floatingRate"))
+<input type="submit" id="submit">
+}
+
+}
