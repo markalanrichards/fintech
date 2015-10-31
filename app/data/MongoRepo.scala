@@ -1,9 +1,7 @@
 package data
 
-import com.mongodb.casbah.Imports._
 import models.{CaseHelper, TradeData}
-import scala.collection.JavaConverters._
-import scala.collection.concurrent.TrieMap
+
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
@@ -45,12 +43,32 @@ object MongoRepo {
       }
     }
 
+    def randomNotional = {
+      (if (new Random().nextBoolean()) 1 else -1) *
+        ( Math.abs(new Random().nextInt(10)) % 5 match {
+        case 0 | 1 => 1
+        case 2 => 3
+        case 3 => 5
+        case 4 => 10
+      })
+    }
+
+    def randomPercentage = {
+      Math.abs(new Random().nextInt(10)) % 5 match {
+        case 0 | 1 => 0.5
+        case 2 => 1.0
+        case 3 => 1.5
+        case 4 => 0.25
+      }
+    }
+
+
     def randomNum(top: Int) = Math.abs(new Random().nextInt(top))
 
 
     dataRepo.remove(Map())
     (0 to 50).foreach { i =>
-      val t = TradeData(randomCurr, 1 + randomNum(10), (1 + randomNum(10)).toString + "y", "2015-11-10", randomCC, randomNum(4) + "%", randomNum(2) + "%")
+      val t = TradeData(randomCurr, randomNotional, (1 + randomNum(10)).toString + "y", "2015-11-10", randomCC, (4 + randomPercentage) + "%", randomPercentage + "%")
       dataRepo.insert(CaseHelper.ccToMap(t))
       //    }
 

@@ -1,6 +1,8 @@
 package controllers
 
 import data.MongoRepo._
+import play.api.routing.JavaScriptReverseRouter
+
 // import data.TestRepo._
 import models.{CaseHelper, CounterpartyData, TradeData}
 import play.api.Play.current
@@ -11,8 +13,36 @@ import play.api.mvc._
 
 object Application extends Controller {
 
+  def javascriptRoutes = Action { implicit request =>
+    Ok(
+      JavaScriptReverseRouter("jsRoutes")(
+        routes.javascript.Application.scenarioAnalysis,
+        routes.javascript.Application.stressAnalysis
+      )
+    ).as("text/javascript")
+  }
+
+
   def index = Action {
     Ok(views.html.populate(counterpartyForm, tradeForm))
+  }
+
+  implicit class RichString(str: String) {
+    def % =  str.replace("%", "").toDouble / 100
+  }
+
+  def scenarioAnalysis(newBps: String) = Action {
+    // sys.error("error scenario analysis!")
+    val libor = newBps.toInt
+    val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
+    val newValue = trades.map(t => {
+      t.notional.toInt * (t.floatingRate.%.toDouble + libor - t.fixRate.%)
+    } ).sum
+    Ok(BigDecimal(newValue).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble.toString)
+  }
+
+  def stressAnalysis(newBps: String) = Action {
+    Ok(newBps)
   }
 
   def trades = Action {

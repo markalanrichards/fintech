@@ -13,4 +13,49 @@
     </tr>
     </thead>
 </table>
+
+
+
+<script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+<input type='text' id='num1'/>
+</br>
+<input type='button' value='scenario analysis' id='scenarioBtn' />
+<input type='button' value='stress analysis' id='stressBtn' />
+<br />
+<div id="result" />
+
+<script type="text/javascript" charset="utf-8">
+    var scenarioAnalysis = function() {
+      var num1 = $('#num1').val();
+
+      jsRoutes.controllers.Application.scenarioAnalysis(num1).ajax({
+        success: function(data) {
+          $("#result").html(data);
+        },
+        error: function() {
+          alert("Error!")
+        }
+      })
+    };
+
+    var stressAnalysis = function() {
+      alert("Starting stress analysis!")
+      var num1 = $('#num1').val();
+
+      jsRoutes.controllers.Application.stressAnalysis(num1).ajax({
+        success: function(data) {
+          $("#result").html(data);
+        },
+        error: function() {
+          alert("Error!")
+        }
+      })
+    };
+
+    $('#scenarioBtn').click(scenarioAnalysis);
+    $('#stressBtn').click(stressAnalysis);
+  </script>
+
+
 }
+
