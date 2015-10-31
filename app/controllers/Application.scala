@@ -15,6 +15,10 @@ import Implicits._
 
 object Application extends Controller {
 
+
+  def d3 = Action {
+    Ok(views.html.d3())
+  }
   def index = Action {
     Ok(views.html.populate(counterpartyForm, tradeForm))
   }

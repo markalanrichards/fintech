@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                 controllers.Application.index
+GET     /d3               controllers.Application.d3
 GET     /trades           controllers.Application.trades
 GET     /trades.json      controllers.Application.tradesJson
 GET     /counterparties   controllers.Application.counterparties
