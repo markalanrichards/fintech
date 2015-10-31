@@ -1,6 +1,7 @@
 package controllers
 
 import data.MongoRepo._
+import helpers.Implicits
 import play.api.routing.JavaScriptReverseRouter
 
 // import data.TestRepo._
@@ -10,61 +11,12 @@ import play.api.data.Forms._
 import play.api.data._
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
+import Implicits._
 
 object Application extends Controller {
 
-  def javascriptRoutes = Action { implicit request =>
-    Ok(
-      JavaScriptReverseRouter("jsRoutes")(
-        routes.javascript.Application.scenarioAnalysis,
-        routes.javascript.Application.stressAnalysis
-      )
-    ).as("text/javascript")
-  }
-
-
   def index = Action {
     Ok(views.html.populate(counterpartyForm, tradeForm))
-  }
-
-  implicit class RichDouble(d: Double) {
-    def r2str = BigDecimal(d).setScale(2, BigDecimal.RoundingMode.HALF_UP).toString
-  }
-
-
-  implicit class RichString(str: String) {
-    def % =  str.replace("%", "").toDouble / 100
-    def y = str.replace("y", "").toInt
-  }
-
-  private def scenarioAnalyseTrade(t: TradeData, libor: Double) = {
-    t.notional.toInt * (t.fixRate.% - t.floatingRate.%.toDouble + libor)
-  }
-
-  def scenarioAnalysisBucked(newBps: String) = Action {
-    val libor = newBps.toDouble / 100
-    val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
-    val libors = (0 to 10).map { x =>
-      val newValue = trades.filter(_.tenor.y == x).map(t => {
-        scenarioAnalyseTrade(t, libor)
-      }).sum
-      x -> newValue.r2str
-    }
-    Ok(com.mongodb.util.JSON.serialize(Map("names" -> libors))).as("application/json")
-  }
-
-  def scenarioAnalysis(newBps: String) = Action {
-    // sys.error("error scenario analysis!")
-    val libor = newBps.toInt
-    val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
-    val newValue = trades.map(t => {
-      scenarioAnalyseTrade(t, libor)
-    } ).sum
-    Ok(newValue.r2str)
-  }
-
-  def stressAnalysis(newBps: String) = Action {
-    Ok(newBps)
   }
 
   def trades = Action {
