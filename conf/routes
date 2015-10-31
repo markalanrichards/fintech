@@ -19,7 +19,7 @@ GET /stressAnalysis/:newBps           controllers.Scenarios.stressAnalysis(newBp
 # post actions here ? or still get ???
 POST    /counterpartyPost  controllers.Application.counterpartyPost
 POST    /tradePost  controllers.Application.tradePost
-
+POST /ratings controllers.Application.ratingsPost
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file      controllers.Assets.at(path="/public", file)

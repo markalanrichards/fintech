@@ -4,19 +4,15 @@ import java.math
 import java.math.MathContext
 
 import data.MongoRepo._
-import helpers.Implicits
-import play.api.routing.JavaScriptReverseRouter
-
-import scala.math.BigDecimal.RoundingMode
 
 // import data.TestRepo._
+
 import models.{CaseHelper, CounterpartyData, TradeData}
 import play.api.Play.current
 import play.api.data.Forms._
 import play.api.data._
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc._
-import Implicits._
 
 object Application extends Controller {
 
@@ -24,6 +20,7 @@ object Application extends Controller {
   def d3 = Action {
     Ok(views.html.d3())
   }
+
   def index = Action {
     Ok(views.html.populate(counterpartyForm, tradeForm))
   }
@@ -37,14 +34,14 @@ object Application extends Controller {
     val capitalRatingMap: Map[String, String] = capitalRateRepo.findAll().map(v => {
       (v.get("rating").get, v.get("capitalPercentage").get)
     }).toMap
-    val counterPartiesMap: Map[String,String] = counterpartiesRepo.findAll().map(v => {
-      ( v.get("counterparty").get,v.get("rating").get)
+    val counterPartiesMap: Map[String, String] = counterpartiesRepo.findAll().map(v => {
+      (v.get("counterparty").get, v.get("rating").get)
     }).toMap
     val trades = tradesRepo.findAll().map(x => {
       val ratingValue = counterPartiesMap(x.get("counterparty").get).toString()
-      val mathContext = new MathContext(2,math.RoundingMode.HALF_EVEN)
+      val mathContext = new MathContext(2, math.RoundingMode.HALF_EVEN)
       val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext).abs
-      Map("rating" -> ratingValue,"capitalrequirement" -> capitalRequirement) ++ x
+      Map("rating" -> ratingValue, "capitalrequirement" -> capitalRequirement) ++ x
     })
     Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
   }
@@ -52,6 +49,14 @@ object Application extends Controller {
   def counterparties = Action {
     val trades = counterpartiesRepo.findAll[List[Map[String, String]]]()
     Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
+  }
+
+  def ratings = {
+    val counterPartiesMap: Map[String, String] = counterpartiesRepo.findAll().map(v => {
+      (v.get("counterparty").get, v.get("rating").get)
+    }).toMap
+    counterPartiesMap
+
   }
 
   val counterpartyForm = Form(
@@ -92,5 +97,18 @@ object Application extends Controller {
     Redirect(routes.Application.counterparties())
   }
 
+
+  def ratingsPost = Action { implicit request =>
+    counterpartiesRepo.remove(Map())
+     val newRatings : List[CounterpartyData] = request.body.asFormUrlEncoded.get.toList.map(entry => {
+      CounterpartyData(entry._1,entry._2(0))
+    })
+
+    newRatings.foreach {x =>
+      counterpartiesRepo.insert(CaseHelper.ccToMap(x))
+    }
+//    println(newRatings)
+    Redirect(routes.Application.trades())
+  }
 
 }
