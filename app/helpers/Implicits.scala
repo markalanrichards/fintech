@@ -3,7 +3,8 @@ package helpers
 object Implicits {
 
   implicit class RichDouble(d: Double) {
-    def r2str = BigDecimal(d).setScale(2, BigDecimal.RoundingMode.HALF_UP).toString()
+    def r2 = BigDecimal(d).setScale(2, BigDecimal.RoundingMode.HALF_UP)
+    def r2str = r2.toString()
   }
 
 

@@ -29,17 +29,16 @@ object Scenarios extends Controller {
 
   val libors = List(2.5, 3.0, 3.5, 4.0, 4.5)
 
-  def scenarioAnalysisBucked(newBps: String) = Action {
-    val libor = newBps.toDouble / 100
+  def scenarioAnalysisBucked = Action {
     val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
 
 
     val librs = libors.map { liblib =>
-        val values = (0 to 10).map { x =>
-          val newValue = trades.filter(_.tenor.y == x).map(t => {
-            liborTradeAnalysis(t, liblib)
+        val values = List(1, 3, 5, 10).map { x =>
+          val newValue = trades.filter(_.tenor.y <= x).map(t => {
+            liborTradeAnalysis(t, liblib / 100)
           }).sum
-         (x -> newValue.r2str)
+         x -> newValue.r2
         }
       Map("key" -> s"Libor$liblib", "values" -> values)
       }

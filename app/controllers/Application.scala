@@ -126,7 +126,7 @@ object Application extends Controller {
       .map(tradeToTuple => (tradeToTuple._1,tradeToTuple._2.map(_._2).sum))
       .map(entry => Map("key"-> entry._1,"y" -> entry._2.toString))
     println(ratingPieChart)
-    Ok(Json.toJson(ratingPieChart).toString).as("application/json")
+    Ok(Json.toJson(ratingPieChart).toString).as("application/json").as("application/json").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
 }
