@@ -43,7 +43,7 @@ object Scenarios extends Controller {
         }
       Map("key" -> s"Libor$liblib", "values" -> values)
       }
-    Ok(com.mongodb.util.JSON.serialize(Map("names" -> librs))).as("application/json")
+    Ok(com.mongodb.util.JSON.serialize(Map("names" -> librs))).as("application/json").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
 
   def scenarioAnalysis(newBps: String) = Action {
