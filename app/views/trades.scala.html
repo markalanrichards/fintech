@@ -1,30 +1,31 @@
 @main("Show me all you have") {
 
-<table data-toggle="table" data-url="/trades.json" data-cache="false" data-height="299">
-    <thead>
-    <tr>
-        <th data-field="currency" data-sortable="true">Currency</th>
-        <th data-field="notional" data-sortable="true">Notional</th>
-        <th data-field="maturityDate" data-sortable="true">MaturityDate</th>
-        <th data-field="fixRate" data-sortable="true">FixRate</th>
-        <th data-field="floatingRate" data-sortable="true">FloatingRate</th>
-        <th data-field="counterparty" data-sortable="true"><i class="glyphicon glyphicon-star"></i>Counterparty</th>
-        <th data-field="tenor" data-sortable="true">Tenor</th>
-    </tr>
-    </thead>
-</table>
+    <table data-toggle="table" data-url="/trades.json" data-cache="false" data-height="299">
+        <thead>
+            <tr>
+                <th data-field="currency" data-sortable="true">Currency</th>
+                <th data-field="notional" data-sortable="true">Notional</th>
+                <th data-field="maturityDate" data-sortable="true">MaturityDate</th>
+                <th data-field="fixRate" data-sortable="true">FixRate</th>
+                <th data-field="floatingRate" data-sortable="true">FloatingRate</th>
+                <th data-field="counterparty" data-sortable="true"><i class="glyphicon glyphicon-star"></i>
+                    Counterparty</th>
+                <th data-field="tenor" data-sortable="true">Tenor</th>
+            </tr>
+        </thead>
+    </table>
 
 
 
-<script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
-<input type='text' id='num1'/>
-</br>
-<input type='button' value='scenario analysis' id='scenarioBtn' />
-<input type='button' value='stress analysis' id='stressBtn' />
-<br />
-<div id="result" />
+    <script type="text/javascript" src="@routes.Application.javascriptRoutes"></script>
+    <input type='text' id='num1'/>
+    <br/>
+    <input type='button' value='scenario analysis' id='scenarioBtn' />
+    <input type='button' value='stress analysis' id='stressBtn' />
+    <br />
+    <div id="result" ></div>
 
-<script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
     var scenarioAnalysis = function() {
       var num1 = $('#num1').val();
 

@@ -3,11 +3,12 @@ package models
 /**
  * Created by Vladimir on 30.10.2015.
  */
+
 case class CounterpartyData(counterparty: String, rating: String)
 
 case class TradeData(currency: String, notional: Int, tenor: String, maturityDate: String, counterparty: String, fixRate: String, floatingRate: String)
 
-
+case class CapitalRateData(rating:String,capitalPercentage: String)
 
 
 object CaseHelper {
