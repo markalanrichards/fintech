@@ -46,8 +46,11 @@
 
 </style>
 <body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/d3.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/json2.js")"></script>
+
 <script>
+
 
 var margin = {top: 20, right: 40, bottom: 30, left: 20},
     width = 960 - margin.left - margin.right,
@@ -83,13 +86,12 @@ var title = svg.append("text")
     .attr("dy", ".71em")
     .text(2000);
 
-d3.json("localhost:9000/analysis/bucked/scenario/4", function(error, data) {
+d3.json("/analysis/bucked/scenario/4", function(error, data) {
 
+   console.log(data);
   // Convert strings to numbers.
-  data.forEach(function(d) {
-    d.people = +d.people;
-    d.year = +d.year;
-    d.age = +d.age;
+  data.names.forEach(function(d) {
+    alert(d.key)
   });
 
   // Compute the extent of the data set in age and years.
