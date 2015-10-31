@@ -27,8 +27,30 @@ object Application extends Controller {
     Ok(views.html.populate(counterpartyForm, tradeForm))
   }
 
+  implicit class RichDouble(d: Double) {
+    def r2str = BigDecimal(d).setScale(2, BigDecimal.RoundingMode.HALF_UP).toString
+  }
+
+
   implicit class RichString(str: String) {
     def % =  str.replace("%", "").toDouble / 100
+    def y = str.replace("y", "").toInt
+  }
+
+  private def scenarioAnalyseTrade(t: TradeData, libor: Double) = {
+    t.notional.toInt * (t.fixRate.% - t.floatingRate.%.toDouble + libor)
+  }
+
+  def scenarioAnalysisBucked(newBps: String) = Action {
+    val libor = newBps.toDouble / 100
+    val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
+    val libors = (0 to 10).map { x =>
+      val newValue = trades.filter(_.tenor.y == x).map(t => {
+        scenarioAnalyseTrade(t, libor)
+      }).sum
+      x -> newValue.r2str
+    }
+    Ok(com.mongodb.util.JSON.serialize(libors))
   }
 
   def scenarioAnalysis(newBps: String) = Action {
@@ -36,9 +58,9 @@ object Application extends Controller {
     val libor = newBps.toInt
     val trades = tradesRepo.findAll().map(t => CaseHelper.createCaseClass[TradeData](t))
     val newValue = trades.map(t => {
-      t.notional.toInt * (t.floatingRate.%.toDouble + libor - t.fixRate.%)
+      scenarioAnalyseTrade(t, libor)
     } ).sum
-    Ok(BigDecimal(newValue).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble.toString)
+    Ok(newValue.r2str)
   }
 
   def stressAnalysis(newBps: String) = Action {

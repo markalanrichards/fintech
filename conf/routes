@@ -12,6 +12,7 @@ GET     /counterparties   controllers.Application.counterparties
 GET    /assets/javascripts/routes      controllers.Application.javascriptRoutes()
 
 GET /scenarioAnalysis/:newBps controllers.Application.scenarioAnalysis(newBps: String)
+GET /analysis/bucked/scenario/:newBps controllers.Application.scenarioAnalysisBucked(newBps: String)
 GET /stressAnalysis/:newBps   controllers.Application.stressAnalysis(newBps: String)
 
 
