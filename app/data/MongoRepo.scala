@@ -16,7 +16,7 @@ object MongoRepo {
   val connection = new MongoConnection("mongodb://heroku_tvczrsc9:128m3n0bkg1qtuta2uv4p6ga7h@ds045464.mongolab.com:45464/heroku_tvczrsc9", "heroku_tvczrsc9")
   val tradesRepo = new MongoDataRepository(connection, "trades")
   val counterpartiesRepo = new MongoDataRepository(connection, "counterparties")
-  val ratingsRepo = new MongoDataRepository(connection,"ratings")
+  val capitalRateRepo = new MongoDataRepository(connection,"ratings")
   val parties = List("Liverpool Bank", "Bristol Bank","Southampton Bank", "Edinburgh Bank", "Norfolk Bank", "Birmingham Bank","Cardiff Bank")
 
   var ratings = Map(
@@ -83,13 +83,13 @@ object MongoRepo {
 
     dataRepo.remove(Map())
     counterpartiesRepo.remove(Map())
-    ratingsRepo.remove(Map())
+    capitalRateRepo.remove(Map())
     parties.foreach(party => {
       val counterParty = CounterpartyData(party,randomRating)
       counterpartiesRepo.insert(CaseHelper.ccToMap(counterParty))
     })
     ratings.foreach(entry => {
-      ratingsRepo.insert(CaseHelper.ccToMap(CapitalRateData(entry._1,entry._2)))
+      capitalRateRepo.insert(CaseHelper.ccToMap(CapitalRateData(entry._1,entry._2)))
     })
     (0 to 50).foreach { i =>
       val randomCounterParty: String = randomCC
