@@ -29,12 +29,11 @@ object Application extends Controller {
   }
 
   def tradesJson = Action {
+    val counterPartiesMap: Map[String,String] = counterpartiesRepo.findAll().map(v => {
+      ( v.get("counterparty").get,v.get("rating").get)
+    }).toMap
     val trades = tradesRepo.findAll().map(x => {
-      val first1 = counterpartiesRepo.search(Map("counterparty" -> x.get("counterparty")))
-      val stringToOption = first1.head.get("rating")
-
-      val cp : String = stringToOption.get.asInstanceOf[String]
-      Map("rating" -> Option(cp)) ++ x
+      Map("rating" -> counterPartiesMap.get(x.get("counterparty").get)) ++ x
     })
     Ok(com.mongodb.util.JSON.serialize(trades)).as("application/json")
   }
