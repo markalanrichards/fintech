@@ -1,5 +1,6 @@
 package controllers
 
+import java.io.Serializable
 import java.math
 import java.math.MathContext
 
@@ -40,7 +41,7 @@ object Application extends Controller {
     Ok(views.html.trades())
   }
 
-  def tradesJsonValue =  {
+  def tradesJsonValue: List[Map[String, String]] = {
     val capitalRatingMap: Map[String, String] = capitalRateRepo.findAll().map(v => {
       (v.get("rating").get, v.get("capitalPercentage").get)
     }).toMap
@@ -56,7 +57,8 @@ object Application extends Controller {
     trades
 
   }
-  def tradesJson = Action{
+
+  def tradesJson = Action {
     Ok(com.mongodb.util.JSON.serialize(tradesJsonValue)).as("application/json")
   }
 
@@ -125,14 +127,32 @@ object Application extends Controller {
     Redirect(routes.Application.trades())
   }
 
-  def ratingPieChart = Action  {
-    val ratingPieChart = tradesJsonValue.map(trade =>
-      (trade("rating").toString,trade("capitalrequirement").toString.toDouble))
+  def ratingPieChart(field: String) = Action {
+    val fieldToUse = (if (field == null || field.isEmpty) "rating" else field)
+    val tradesJsonToUse: List[Map[String, String]] = tradesJsonValue
+    pieChartData(fieldToUse, tradesJsonToUse)
+  }
+
+  def pieChartData(fieldToUse: String, tradesJsonToUse: List[Map[String, String]]): Result = {
+    val ratingPieChart = tradesJsonToUse.map(trade =>
+      (trade(fieldToUse).toString, trade("capitalrequirement").toString.toDouble))
       .groupBy(tuple => tuple._1)
-      .map(tradeToTuple => (tradeToTuple._1,tradeToTuple._2.map(_._2).sum))
-      .map(entry => Map("key"-> entry._1,"y" -> entry._2.toString))
+      .map(tradeToTuple => (tradeToTuple._1, tradeToTuple._2.map(_._2).sum))
+      .map(entry => Map("key" -> entry._1, "y" -> entry._2.toString))
     println(ratingPieChart)
     Ok(Json.toJson(ratingPieChart).toString).as("application/json").as("application/json").withHeaders("Access-Control-Allow-Origin" -> "*")
   }
+
+  def filteredRatingChart(field: String, filter: String, filterValue: String) = Action {
+    val fieldToUse = (if (field == null || field.isEmpty) "rating" else field)
+    if (filter == null || filter.isEmpty || filterValue == null || filterValue.isEmpty) {
+      pieChartData(fieldToUse, tradesJsonValue)
+    }
+    else {
+      pieChartData(fieldToUse, tradesJsonValue.filter(x => x(filter).equals(filterValue)))
+    }
+  }
+
+
 
 }
