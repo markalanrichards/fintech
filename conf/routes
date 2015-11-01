@@ -10,6 +10,7 @@ GET     /d32              controllers.Application.d32
 GET     /trades           controllers.Application.trades
 GET     /trades.json      controllers.Application.tradesJson
 GET     /counterparties   controllers.Application.counterparties
+GET     /counterpartiesEdit   controllers.Application.counterpartiesEdit
 
 GET    /assets/javascripts/routes      controllers.Scenarios.javascriptRoutes()
 

@@ -36,8 +36,12 @@ object Application extends Controller {
   }
 
   def trades = Action {
-    val trades = tradesRepo.findAll[List[Map[String, String]]]()
     Ok(views.html.trades())
+  }
+
+
+  def counterpartiesEdit = Action {
+    Ok(views.html.counterparties())
   }
 
   def tradesJsonValue =  {

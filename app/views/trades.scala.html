@@ -11,7 +11,7 @@
 
      function capitalFormatter(value) {
      var clazzVal = ''
-         if (value > 10) { clazzVal = 'problem' }
+         if (value > 5) { clazzVal = 'problem' }
         return '<div class='+ clazzVal + '>' + value + '</div>';
     }
 
@@ -41,64 +41,7 @@
     LIBOR: <input type='text' id='num1' class="form-control"/> <input type='button' value='scenario analysis' id='scenarioBtn' class="form-action"/>
     </br>
 
-    <!--input type='button' value='stress analysis' id='stressBtn' /-->
-    <br />
-    <div id="result" />
-    <script type="text/javascript" src="@routes.Scenarios.javascriptRoutes"></script>
-    <input type='text' id='num1'/>
-    <br/>
-    <input type='button' value='scenario analysis' id='scenarioBtn' />
-    <input type='button' value='stress analysis' id='stressBtn' />
-    <br />
-    <div id="result" ></div>
-    <form action="/ratings" method="post">
-    <table>
-        <thead>
-            <tr><th>Bank</th>
-                <th>Rating</th></tr>
-        </thead>
-        <tbody>
-        @for((key, value) <- Application.ratings) {
-            <tr>
-                <td>@key</td>
-                <td><input name="@key" type="text" value="@value"/></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-        <input type="submit" value="Submit rating"/>
-    </form>
-    <script type="text/javascript" charset="utf-8">
-    var scenarioAnalysis = function() {
-      var num1 = $('#num1').val();
 
-      jsRoutes.controllers.Scenarios.scenarioAnalysis(num1).ajax({
-        success: function(data) {
-          $("#result").html(data);
-        },
-        error: function() {
-          alert("Error!")
-        }
-      })
-    };
-
-    var stressAnalysis = function() {
-      alert("Starting stress analysis!")
-      var num1 = $('#num1').val();
-
-      jsRoutes.controllers.Scenarios.stressAnalysis(num1).ajax({
-        success: function(data) {
-          $("#result").html(data);
-        },
-        error: function() {
-          alert("Error!")
-        }
-      })
-    };
-
-    $('#scenarioBtn').click(scenarioAnalysis);
-    $('#stressBtn').click(stressAnalysis);
-  </script>
 
 
 }
