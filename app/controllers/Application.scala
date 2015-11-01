@@ -52,7 +52,7 @@ object Application extends Controller {
       val ratingValue = counterPartiesMap(x.get("counterparty").get).toString()
       val mathContext = new MathContext(2, math.RoundingMode.HALF_EVEN)
       val capitalRequirement = (BigDecimal(x.get("notional").get.toString) * BigDecimal(capitalRatingMap(ratingValue).toString)).round(mathContext).abs
-      Map("rating" -> ratingValue, "capitalrequirement" -> capitalRequirement) ++ x
+      Map("rating" -> ratingValue, "capitalrequirement" -> capitalRequirement.toString()) ++ x
     })
     trades
 
