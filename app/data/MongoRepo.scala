@@ -66,9 +66,8 @@ object MongoRepo {
       (if (new Random().nextBoolean()) 1 else -1) *
         ( Math.abs(new Random().nextInt(10)) % 5 match {
         case 0 | 1 => 1
-        case 2 => 3
-        case 3 => 5
-        case 4 => 10
+        case 2 | 3 => randomNum(5)
+        case 4 => randomNum(10)
       })
     }
 
