@@ -1,7 +1,24 @@
 @import helper.select
 @main("Show me all you have") {
 
-    <table data-toggle="table" data-url="/trades.json" data-cache="false" data-height="299">
+<script>
+    function rowStyle(row, index) {
+        var classes = ['', 'green', '', '', '', '', 'warning', 'info', '', ''];
+            return {
+                classes: classes[Math.floor((Math.random() * 10) + 1)]
+            };
+    }
+
+     function capitalFormatter(value) {
+     var clazzVal = ''
+         if (value > 10) { clazzVal = 'problem' }
+        return '<div class='+ clazzVal + '>' + value + '</div>';
+    }
+
+</script>
+
+
+    <table data-toggle="table" data-url="/trades.json" data-cache="false" data-height="699" data-row-style="rowStyle">
         <thead>
             <tr>
                 <th data-field="currency" data-sortable="true">Currency</th>
@@ -13,7 +30,7 @@
                     Counterparty</th>
                 <th data-field="tenor" data-sortable="true">Tenor</th>
                 <th data-field="rating" data-sortable="true">CCP Rating</th>
-                <th data-field="capitalrequirement" data-sortable="true">Capital Requirement</th>
+                <th data-field="capitalrequirement" data-sortable="true" data-formatter="capitalFormatter">Capital Requirement</th>
             </tr>
         </thead>
     </table>

@@ -1,0 +1,86 @@
+@main("Show me all you have") {
+
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/angular.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/d3.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/nv.d3.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/angularjs-nvd3-directives.min.js")"></script>
+
+<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/nv.d3.css")" />
+
+
+<script>
+
+
+var app = angular.module('nvd3TestApp', ['nvd3ChartDirectives']);
+
+
+app.controller('ExampleCtrl', function($scope, $http) {
+    $http.get("/rating.json")
+    .success(function (response) {
+
+    	 $scope.exampleData=response
+    	 console.log("$scope.exampleData")
+        console.log($scope.exampleData)
+
+                console.log("hello");
+
+    	$scope.width = 400;
+    $scope.height = 400;
+
+    $scope.xFunction = function() {
+      return function(d) {
+        return d.key;
+      };
+    }
+    $scope.yFunction = function() {
+      return function(d) {
+        return d.y;
+      };
+    }
+
+    $scope.descriptionFunction = function() {
+      return function(d) {
+        return d.key;
+      }
+    }
+
+
+    	});
+});
+
+</script>
+
+<div  ng-app='nvd3TestApp' ng-controller="ExampleCtrl">
+    <nvd3-pie-chart
+            id="exampleId"
+            data="exampleData"
+            x="xFunction()"
+            y="yFunction()"
+            width="{{ width }}"
+            height="{{ height }}"
+            showLabels="true"
+            pieLabelsOutside="false"
+
+            showLabels="true"
+            labelType="key"
+            pieLabelsOutside="true">
+        <svg height="250"></svg>
+    </nvd3-pie-chart>
+
+    <div>
+        <label for="">Width</label>
+        <input type="text" ng-model="width" />
+    </div>
+
+    <div>
+        <label for="">Height</label>
+        <input type="text" ng-model="height" />
+    </div>
+
+</div>
+
+
+
+
+}

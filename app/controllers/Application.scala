@@ -21,6 +21,12 @@ object Application extends Controller {
   def d3 = Action {
     Ok(views.html.d3())
   }
+
+
+  def piechart = Action {
+    Ok(views.html.piechart())
+  }
+
   def d32 = Action {
     Ok(views.html.d32())
   }

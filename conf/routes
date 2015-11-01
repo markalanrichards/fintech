@@ -5,7 +5,8 @@
 # Home page
 GET     /                 controllers.Application.index
 GET     /d3               controllers.Application.d3
-GET     /d32               controllers.Application.d32
+GET     /piechart         controllers.Application.piechart
+GET     /d32              controllers.Application.d32
 GET     /trades           controllers.Application.trades
 GET     /trades.json      controllers.Application.tradesJson
 GET     /counterparties   controllers.Application.counterparties
@@ -25,4 +26,4 @@ POST /ratings controllers.Application.ratingsPost
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file      controllers.Assets.at(path="/public", file)
-GET /ratingPieChart controllers.Application.ratingPieChart
+GET /rating.json controllers.Application.ratingPieChart

@@ -17,20 +17,16 @@ object MongoRepo {
   val tradesRepo = new MongoDataRepository(connection, "trades")
   val counterpartiesRepo = new MongoDataRepository(connection, "counterparties")
   val capitalRateRepo = new MongoDataRepository(connection,"ratings")
-  val parties = List("Liverpool Bank", "Bristol Bank","Southampton Bank", "Edinburgh Bank", "Norfolk Bank", "Birmingham Bank","Cardiff Bank")
+  val parties = List("Liverpool Bank", "Bristol Bank","Southampton Bank", "Edinburgh Bank", "Norfolk Bank", "Birmingham Bank",
+    "Cardiff Bank", "Playstow bank", "King Henry bank", "Bank of the Thames", "Rainbow Loft bank")
 
   var ratings = Map(
     "AAA"->"0.07",
     "AA" -> "0.08",
-    "A+" -> "0.10",
     "A" -> "0.12",
-    "A-" -> "0.20",
-    "BBB+" -> "0.35",
-    "BBB" -> "0.60",
-    "BBB-" -> "1.00",
-    "BB+" -> "2.50",
-    "BB" -> "4.25",
-    "BB-"->"6.5"
+    "BBB" -> "0.30",
+    "BB" -> "0.6",
+    "B"->"1.2"
   )
 
   def main(a: Array[String]) {
@@ -41,7 +37,15 @@ object MongoRepo {
     //println(counterpartiesRepo.size)
 
     def randomRating= {
-      ratings.toList(Random.nextInt(ratings.size))._1
+      Random.nextInt(10) match {
+        case 0|1 => "AAA"
+        case 3|9 => "AA"
+        case 5|2 => "A"
+        case 6|4 => "BBB"
+        case 7 => "BB"
+        case 8 => "B"
+      }
+
     }
 
     def randomCC = {
@@ -71,8 +75,8 @@ object MongoRepo {
     def randomPercentage = {
       Math.abs(new Random().nextInt(10)) % 5 match {
         case 0 | 1 => 0.5
-        case 2 => 1.0
-        case 3 => 1.5
+        case 2 => 0.75
+        case 3 => 1.25
         case 4 => 0.25
       }
     }
@@ -91,10 +95,19 @@ object MongoRepo {
     ratings.foreach(entry => {
       capitalRateRepo.insert(CaseHelper.ccToMap(CapitalRateData(entry._1,entry._2)))
     })
-    (0 to 50).foreach { i =>
+    (0 to 100).foreach { i =>
       val randomCounterParty: String = randomCC
 
-      val t = TradeData(randomCurr, randomNotional, (1 + randomNum(10)).toString, "2015-11-10", randomCounterParty, (4 + randomPercentage).toString, randomPercentage.toString)
+      val not = randomNotional
+      def randomCop(not: Int): String = {
+        val cc = randomCounterParty
+        if (not > 5 && cc.contains("B")) {
+          randomCop(not - 1)
+        }
+        cc
+      }
+      val cpty = randomCop(not)
+      val t = TradeData(randomCurr, not, (1 + randomNum(10)).toString, "2015-11-10", cpty, (4 + randomPercentage).toString, randomPercentage.toString)
       dataRepo.insert(CaseHelper.ccToMap(t))
       println(dataRepo.size)
     }
