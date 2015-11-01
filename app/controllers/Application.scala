@@ -27,6 +27,9 @@ object Application extends Controller {
   def piechart = Action {
     Ok(views.html.piechart())
   }
+  def piechartfiltered = Action {
+    Ok(views.html.piechartfiltered())
+  }
 
   def d32 = Action {
     Ok(views.html.d32())

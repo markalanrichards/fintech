@@ -5,6 +5,7 @@
 # Home page
 GET     /                 controllers.Application.index
 GET     /d3               controllers.Application.d3
+GET     /piechartfiltered         controllers.Application.piechartfiltered
 GET     /piechart         controllers.Application.piechart
 GET     /d32              controllers.Application.d32
 GET     /trades           controllers.Application.trades
